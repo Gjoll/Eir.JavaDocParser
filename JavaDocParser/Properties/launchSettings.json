@@ -1,0 +1,10 @@
+{
+  "profiles": {
+    "Start": {
+      "commandName": "Project",
+      "commandLineArgs": "-i C:\\Development\\Tinkar\\tinkar-java",
+      "workingDirectory": "C:\\Development\\HL7\\BreastRadiologyProfilesV3\\Projects\\AutoMate",
+      "ErrorString": "Invalid property identifier character: <. Path 'profiles.AutoValidate.commandName', line 5, position 0."
+    }
+  }
+}
