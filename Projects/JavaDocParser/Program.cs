@@ -15,7 +15,9 @@ namespace Eir.JavaDocParser
     class Program
     {
         private JavaParser javaParser = new JavaParser();
-            void ParseArguments(String[] args)
+        private CSParser csParser = new CSParser();
+
+        void ParseArguments(String[] args)
         {
             Int32 i = 0;
             String GetArg() => args[i++];
@@ -25,9 +27,14 @@ namespace Eir.JavaDocParser
                 String arg = GetArg();
                 switch (arg)
                 {
-                    case "-i":
+                    case "-java":
                         javaParser.InputDirs.Add(GetArg());
                         break;
+
+                    case "-cs":
+                        csParser.InputDirs.Add(GetArg());
+                        break;
+
                     default:
                         throw new NotImplementedException($"Argument {arg} not found");
                 }
@@ -37,6 +44,8 @@ namespace Eir.JavaDocParser
         void Run()
         {
             this.javaParser.Parse();
+            this.csParser.Parse();
+            this.csParser.Normalize(this.javaParser);
         }
 
         static Int32 Main(string[] args)
