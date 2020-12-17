@@ -24,17 +24,24 @@
   </ItemGroup>
 
   <ItemGroup>
-    <PackageReference Include="Antlr4" Version="4.6.6">
-      <PrivateAssets>all</PrivateAssets>
-      <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
-    </PackageReference>
-    <PackageReference Include="Antlr4.Runtime" Version="4.6.6" />
+    <PackageReference Include="Antlr4.Runtime.Standard" Version="4.9.0" />
     <PackageReference Include="Microsoft.CodeAnalysis.CSharp" Version="3.9.0-2.final" />
     <PackageReference Include="Newtonsoft.Json" Version="12.0.3" />
   </ItemGroup>
 
   <ItemGroup>
     <Folder Include="Parser\Antlr\" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <Antlr4 Update="Parser\JavadocLexer.g4">
+      <CustomToolNamespace>Eir.JavaDocParser.Parser</CustomToolNamespace>
+      <Listener>false</Listener>
+    </Antlr4>
+    <Antlr4 Update="Parser\JavadocParser.g4">
+      <CustomToolNamespace>Eir.JavaDocParser.Parser</CustomToolNamespace>
+      <Listener>false</Listener>
+    </Antlr4>
   </ItemGroup>
 
 </Project>
