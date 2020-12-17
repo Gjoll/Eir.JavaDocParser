@@ -30,10 +30,6 @@
   </ItemGroup>
 
   <ItemGroup>
-    <Folder Include="Parser\Antlr\" />
-  </ItemGroup>
-
-  <ItemGroup>
     <Antlr4 Update="Parser\JavadocLexer.g4">
       <CustomToolNamespace>Eir.JavaDocParser.Parser</CustomToolNamespace>
       <Listener>false</Listener>

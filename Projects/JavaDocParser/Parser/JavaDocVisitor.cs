@@ -16,9 +16,15 @@ namespace Eir.JavaDocParser.Parser
 {
     class JavaDocVisitor : JavadocParserBaseVisitor<Object>
     {
+        public DocBlock block;
+        
         public bool DebugFlag { get; set; } = false;
-        public JavaDocVisitor()
+        public JavaDocVisitor(String sourcePath)
         {
+            block = new DocBlock
+            {
+                Source = sourcePath
+            };
         }
 
         void TraceMsg(ParserRuleContext context, String fcn)
@@ -32,13 +38,52 @@ namespace Eir.JavaDocParser.Parser
             Trace.WriteLine($"{fcn}. '{text}'");
         }
 
-        //public override object VisitDocument(CommandParser.DocumentContext context)
-        //{
-        //    const String fcn = "VisitDocument";
-        //    this.TraceMsg(context, fcn);
-        //    this.VisitChildren(context);
-        //    return null;
-        //}
+        public override object VisitDescriptionLine(JavadocParser.DescriptionLineContext context)
+        {
+            this.block.Text.AppendLine(context.GetText());
+            return null;
+        }
 
+        public override object VisitBlockTag(JavadocParser.BlockTagContext context)
+        {
+            String blockTagName = context.blockTagName().GetText();
+            StringBuilder blockTagContent = new StringBuilder();
+            foreach (var content in context.blockTagContent())
+                blockTagContent.AppendLine(context.GetText());
+
+            switch (blockTagName.Trim())
+            {
+                case "JsonUnmarshaler":
+                case "JsonMarshaler":
+                case "Unmarshaler":
+                case "Marshaler":
+                case "Override":
+                case "throws":
+                case "exception":
+                case "yahoo":
+                    break;
+
+                case "param":
+                    //this.block.Author = blockTagContent.ToString();
+                    break;
+
+                case "return":
+                    this.block.Return = blockTagContent.ToString();
+                    break;
+
+                case "see":
+                    //this.block.Author = blockTagContent.ToString();
+                    break;
+
+                case "author":
+                    this.block.Author = blockTagContent.ToString();
+                    break;
+
+                default:
+                    TraceMsg(context, $"Unknown block tag {blockTagName}");
+                    break;
+            }
+            return null;
+        }
     }
 }

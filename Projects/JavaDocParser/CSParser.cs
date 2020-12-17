@@ -1,4 +1,5 @@
-﻿using Microsoft.CodeAnalysis;
+﻿using Antlr4.Runtime;
+using Microsoft.CodeAnalysis;
 using Microsoft.CodeAnalysis.CSharp;
 using Microsoft.CodeAnalysis.CSharp.Syntax;
 using System;
@@ -7,6 +8,7 @@ using System.Diagnostics;
 using System.IO;
 using System.Linq;
 using System.Text;
+using Eir.JavaDocParser.Parser;
 
 namespace Eir.JavaDocParser
 {
