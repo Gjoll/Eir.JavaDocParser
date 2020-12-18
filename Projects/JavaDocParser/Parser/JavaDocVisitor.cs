@@ -40,7 +40,11 @@ namespace Eir.JavaDocParser.Parser
 
         public override object VisitDescriptionLine(JavadocParser.DescriptionLineContext context)
         {
-            this.block.Text.AppendLine(context.GetText());
+            String line = context.GetText();
+            String trimLine = line.Trim();
+            if (trimLine.StartsWith("*"))
+                line = trimLine.Substring(1);
+            this.block.Text.AppendLine(line);
             return null;
         }
 

@@ -26,9 +26,7 @@
 
 lexer grammar JavadocLexer;
 
-NAME
-	: [a-zA-Z]+
-	;
+NAME: [a-zA-Z]+;
 
 NEWLINE
 	: '\n' (SPACE? (STAR {this.InputStream.LA(1) != '/'}?)+)?
@@ -36,43 +34,14 @@ NEWLINE
 	| '\r' (SPACE? (STAR {this.InputStream.LA(1) != '/'}?)+)?
 	;
 
-SPACE
-	: (' '|'\t')+
-	;
-
-TEXT_CONTENT
-	: ~[\n\r\t @*{}/a-zA-Z]+
-	;
-
-AT
-	: '@'
-	;
-
-STAR
-	: '*'
-	;
-
-SLASH
-	: '/'
-	;
-
-JAVADOC_START
-	: '/**' STAR*
-	;
-
-JAVADOC_END
-	: SPACE? STAR* '*/'
-	;
-
-INLINE_TAG_START
-	: '{@'
-	;
-
-BRACE_OPEN
-	: '{'
-	;
-
-BRACE_CLOSE
-	: '}'
-	;
+SPACE: (' '|'\t')+ ;
+TEXT_CONTENT: ~[\n\r\t @*{}/a-zA-Z]+;
+AT: '@';
+STAR: '*';
+SLASH: '/';
+JAVADOC_START: '/**' STAR*;
+JAVADOC_END: SPACE? STAR* '*/';
+INLINE_TAG_START: '{@';
+BRACE_OPEN: '{' ;
+BRACE_CLOSE: '}';
   

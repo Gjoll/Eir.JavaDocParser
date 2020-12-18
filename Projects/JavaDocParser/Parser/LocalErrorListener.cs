@@ -35,14 +35,18 @@ namespace Eir.JavaDocParser.Parser
             RecognitionException e)
         {
             String msgLine = null;
+
             if ((line > 0) && (line <= this.inputLines.Length))
             {
+                StringBuilder sb = new StringBuilder();
+                for (Int32 i = 0; i < this.inputLines.Length; i++)
+                    sb.AppendLine($"{i + 1}. \"{this.inputLines[i]}\"");
+
                 String inputLine = this.inputLines[line-1];
                 if (charPositionInLine < 0)
                     charPositionInLine = 0;
                 if (charPositionInLine > inputLine.Length)
                     charPositionInLine = inputLine.Length;
-                StringBuilder sb = new StringBuilder();
                 sb.Append(inputLine.Substring(0, charPositionInLine));
                 sb.Append("-->");
                 if (charPositionInLine < inputLine.Length)

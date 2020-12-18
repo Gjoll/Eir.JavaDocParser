@@ -1,6 +1,8 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.Linq;
+using System.Text;
 using Microsoft.CodeAnalysis;
 using Microsoft.CodeAnalysis.CSharp;
 using Microsoft.CodeAnalysis.CSharp.Syntax;
@@ -8,18 +10,86 @@ using static Microsoft.CodeAnalysis.CSharp.SyntaxFactory;
 
 namespace Eir.JavaDocParser
 {
-    public class CSRewriter : CSharpSyntaxRewriter
+    class CSRewriter : CSharpSyntaxRewriter
     {
         private CSParser csParser;
-        
+
         public CSRewriter(CSParser csParser)
         {
             this.csParser = csParser;
         }
 
-        public override SyntaxNode? VisitInterfaceDeclaration(InterfaceDeclarationSyntax node)
+        bool JavaAttribute(SyntaxList<AttributeListSyntax> atListList,
+            out String name)
         {
-            return base.VisitInterfaceDeclaration(node);
+            name = null;
+            foreach (AttributeListSyntax atList in atListList)
+            {
+                foreach (AttributeSyntax at in atList.Attributes)
+                {
+                    var attributeName = at.Name.NormalizeWhitespace().ToFullString();
+                    if (attributeName == "JavaAttribute")
+                    {
+                        name = at
+                            .ArgumentList
+                            .Arguments
+                            .First()
+                            .Expression
+                            .GetFirstToken()
+                            .Text;
+
+                        name = name.RemoveQuotes();
+
+                        return true;
+                    }
+                }
+            }
+
+            return false;
+        }
+
+        bool ProcessJavaAttribute(SyntaxList<AttributeListSyntax> attListLists,
+            ref SyntaxTriviaList sf)
+        {
+            if (JavaAttribute(attListLists, out String argumentValue) == false)
+                return false;
+
+            DocBlock docBlock = this.csParser.GetBlock(argumentValue);
+            if (docBlock == null)
+            {
+                Trace.WriteLine($"{argumentValue} contains no documentation");
+                return false;
+            }
+
+            List<String> textLines = new List<string>(docBlock.Text.ToString().Replace("\r", "").Split("\n"));
+            while ((textLines.Count > 0) && (String.IsNullOrWhiteSpace(textLines[0])))
+                textLines.RemoveAt(0);
+            while ((textLines.Count > 0) && (String.IsNullOrWhiteSpace(textLines[textLines.Count - 1])))
+                textLines.RemoveAt(textLines.Count - 1);
+            if (textLines.Count == 0)
+                return false;
+
+            StringBuilder sb = new StringBuilder();
+            sb
+                .AppendLine("/// <summary>")
+                .AppendCommentLines(textLines)
+                .AppendLine("/// </summary>")
+                ;
+            //sf = SyntaxFactory.Comment(sb.ToString());
+
+            return true;
+        }
+
+        public override SyntaxNode VisitInterfaceDeclaration(InterfaceDeclarationSyntax node)
+        {
+            SyntaxNode retVal = base.VisitInterfaceDeclaration(node);
+
+            SyntaxTriviaList sf = retVal.GetLeadingTrivia();
+            if (this.ProcessJavaAttribute(node.AttributeLists, ref sf) == false)
+                return retVal;
+
+            retVal = retVal.WithLeadingTrivia(sf);
+            return retVal;
         }
 
         //public override SyntaxNode VisitVariableDeclaration(VariableDeclarationSyntax node)
