@@ -29,30 +29,31 @@ namespace Eir.JavaDocParser
 
             bool ParseAttributes()
             {
-                String GetWord()
+                String GetWord(String l,
+                    out String restOfLine)
                 {
-                    line = line.Trim();
+                    l = l.Trim();
 
-                    Int32 i = line.IndexOf(" ");
+                    Int32 i = l.IndexOf(" ");
                     if (i < 0)
                     {
-                        String retVal = line;
-                        line = String.Empty;
+                        String retVal = l;
+                        restOfLine = String.Empty;
                         return retVal;
                     }
 
                     {
-                        String retVal = line.Substring(0, i - 1);
-                        line = line.Substring(i);
+                        String retVal = l.Substring(0, i);
+                        restOfLine = l.Substring(i);
                         return retVal;
                     }
                 }
-                String blockTagName = GetWord();
+                String blockTagName = GetWord(line, out String restOfLine);
 
                 switch (blockTagName.Trim())
                 {
                     case "@author":
-                        retVal.Author = line.Trim();
+                        retVal.Author = restOfLine.Trim();
                         return true;
 
                     case "@param":
@@ -60,7 +61,7 @@ namespace Eir.JavaDocParser
                         return true;
 
                     case "@return":
-                        retVal.Return = line.Trim();
+                        retVal.Return = restOfLine.Trim();
                         return true;
 
                     case "@throws":
