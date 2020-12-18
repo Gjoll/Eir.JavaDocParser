@@ -32,15 +32,4 @@
     <PackageReference Include="Newtonsoft.Json" Version="12.0.3" />
   </ItemGroup>
 
-  <ItemGroup>
-    <Antlr4 Update="Parser\JavadocLexer.g4">
-      <CustomToolNamespace>Eir.JavaDocParser.Parser</CustomToolNamespace>
-      <Listener>false</Listener>
-    </Antlr4>
-    <Antlr4 Update="Parser\JavadocParser.g4">
-      <CustomToolNamespace>Eir.JavaDocParser.Parser</CustomToolNamespace>
-      <Listener>false</Listener>
-    </Antlr4>
-  </ItemGroup>
-
 </Project>

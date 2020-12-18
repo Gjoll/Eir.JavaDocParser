@@ -5,7 +5,6 @@ using System.IO;
 using System.Runtime.InteropServices;
 using System.Text;
 using Antlr4.Runtime;
-using Eir.JavaDocParser.Parser;
 using Microsoft.VisualBasic.CompilerServices;
 
 namespace Eir.JavaDocParser
@@ -57,52 +56,33 @@ namespace Eir.JavaDocParser
                 s = s.Substring(index).Trim();
             }
 
+            s = String.Empty;
             return retVal;
         }
 
         DocBlock ParseDocBlock(String javaFilePath,
             String line)
         {
-            line = line.Substring(3).Trim();
-            if (line.Length > 0)
-                return null;
-            
-            StringBuilder docLines = new StringBuilder();
-            bool doneFlag = false;
-            while (doneFlag == false)
+            bool IsEnd()
             {
-                line = lines[this.lineIndex++];
-                String hdr = LineHdr(ref line);
-                docLines.AppendLine(line.Trim());
-                switch (hdr)
-                {
-                    case "*/":
-                        doneFlag = true;
-                        break;
-                }
+                line = line.Trim();
+                if (line.Trim().EndsWith("*/") == false)
+                    return false;
+                line = line.Substring(line.Length - 2);
+                return true;
             }
 
-            String docText = docLines.ToString()
-                .Trim()
-                .Replace("\r", "");
-            String[] inputLines = docText.Split('\n');
-
-            Parser.JavadocLexer lexer = new Parser.JavadocLexer(new AntlrInputStream(docText));
-            lexer.RemoveErrorListeners();
-            lexer.AddErrorListener(new LocalErrorListenerLexer("JavaDoc Lexer",
-                javaFilePath,
-                inputLines));
-
-            Parser.JavadocParser parser = new Parser.JavadocParser(new CommonTokenStream(lexer));
-            parser.Trace = false;
-            parser.RemoveErrorListeners();
-            parser.AddErrorListener(new LocalErrorListenerParser("JavaDoc Parser",
-                javaFilePath,
-                inputLines));
-
-            Parser.JavaDocVisitor visitor = new Parser.JavaDocVisitor(javaFilePath);
-            visitor.Visit(parser.documentation());
-            return visitor.block;
+            StringBuilder docLines = new StringBuilder();
+            docLines.AppendLine(line);
+            bool end = IsEnd();
+            while (end == false)
+            {
+                line = lines[this.lineIndex++];
+                end = IsEnd();
+                if (line.Length > 0)
+                    docLines.AppendLine(line);
+            }
+            return DocBlock.Parse(docLines.ToString());
         }
 
         public override void ParseFile(String javaFilePath)
